@@ -1,41 +1,58 @@
-/*
- * popup.js
- *
- * Ce fichier est exécuté uniquement dans la popup de l’extension.
- *
- * Il gère deux comportements :
- * 1. afficher la bonne touche selon le système d’exploitation ;
- * 2. afficher le compteur total d’autoclics.
- */
+/***********************************
+* SYSTEM THEME ADAPTATION BEHAVIOR *
+***********************************/
+
+// Tags to which the theme class will be applied.
+const targetedTags = [
+  "body",
+  "header",
+  "#title-container",
+  "header p",
+  ".capture-button",
+  ".button-description",
+  "#status",
+  "footer",
+  "section",
+  "kbd"
+];
+
+// Apply or remove the "dark" class on each targeted element.
+function applySystemTheme(isDarkMode) {
+  targetedTags.forEach(function (tagName) {
+    const elements = document.querySelectorAll(tagName);
+
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i];
+
+      if (isDarkMode) {
+        element.classList.add("dark");
+      } else {
+        element.classList.remove("dark");
+      }
+    }
+  });
+}
+
+// Initialize system color-scheme query.
+const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+// Apply initial theme.
+applySystemTheme(systemThemeQuery.matches);
+
+// Listen for changes in system preference.
+systemThemeQuery.addEventListener("change", function (event) {
+  applySystemTheme(event.matches);
+});
+
 
 /************************
  * MODIFIER KEY BEHAVIOR
  ************************/
 
-/*
- * On récupère l’élément HTML qui affiche la touche principale du raccourci.
- *
- * Dans popup.html, cet élément doit avoir :
- * id="modifier-key"
- */
 const modifierKeyElement = document.getElementById("modifier-key");
-
-/*
- * On détecte si l’utilisateur est sur macOS.
- *
- * navigator.platform donne une information sur la plateforme utilisée.
- * On met la chaîne en majuscules pour éviter les problèmes de casse.
- */
 const isMacOperatingSystem = navigator.platform.toUpperCase().includes("MAC");
 
-/*
- * Si l’élément existe bien dans le HTML, on modifie son texte.
- */
 if (modifierKeyElement) {
-  /*
-   * Sur Mac, on affiche la touche Command.
-   * Sur les autres systèmes, on affiche Ctrl.
-   */
   modifierKeyElement.textContent = isMacOperatingSystem ? "⌘" : "Ctrl";
 }
 
@@ -43,34 +60,37 @@ if (modifierKeyElement) {
  * TOTAL CLICKS COUNTER BEHAVIOR
  ********************************/
 
-/*
- * On récupère l’élément HTML qui affichera le compteur de clics.
- *
- * Attention :
- * l’id doit correspondre exactement à celui présent dans popup.html.
- */
 const totalClicksCountElement = document.getElementById("total-clicks-count");
+const resetButton = document.getElementById("reset-button");
 
-/*
- * On lit la valeur totalClicks depuis le stockage local de l’extension.
- */
-chrome.storage.local.get(["totalClicks"], (result) => {
-  /*
-   * Si l’élément HTML n’existe pas, on arrête.
-   */
+const MAX_TOTAL_CLICKS = 999999999999;
+
+function formatClickCount(count) {
+  return String(count).padStart(12, "0");
+}
+
+chrome.storage.local.get(["totalClicks"], function (result) {
   if (!totalClicksCountElement) {
     return;
   }
 
-  /*
-   * Si totalClicks n’existe pas encore, on affiche 0.
-   */
-  const totalClicks = result.totalClicks || 0;
+  let totalClicks = result.totalClicks || 0;
 
-  /*
-   * On affiche le nombre total d’autoclics dans la popup.
-   */
-  totalClicksCountElement.textContent = totalClicks;
+  if (totalClicks > MAX_TOTAL_CLICKS) {
+    totalClicks = MAX_TOTAL_CLICKS;
+  }
+
+  totalClicksCountElement.textContent = formatClickCount(totalClicks);
 });
 
+if (resetButton) {
+  resetButton.addEventListener("click", function () {
+    chrome.storage.local.set({ totalClicks: 0 }, function () {
+      if (!totalClicksCountElement) {
+        return;
+      }
 
+      totalClicksCountElement.textContent = formatClickCount(0);
+    });
+  });
+}
