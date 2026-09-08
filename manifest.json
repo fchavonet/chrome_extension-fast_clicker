@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Fast Clicker",
-  "description": "A minimal and efficient autoclicker for your browser. Activate it with a shortcut, place your cursor where you want, and let it handle the clicks for you.",
+  "description": "A minimal Chrome extension that lets you automate clicks directly in your browser using a simple keyboard shortcut.",
   "version": "1.0",
   "permissions": [
     "scripting",
