@@ -80,7 +80,13 @@ chrome://extensions/
 
 > The total click count is stored locally in your browser with `chrome.storage.local`.
 
-![Screenshot](./assets/images/screenshot/desktop_screenshot.webp)
+<p align="center">
+	<picture>
+		<source media="(prefers-color-scheme: dark)" srcset="./assets/images/screenshots/desktop_screenshot-dark.webp">
+		<source media="(prefers-color-scheme: light)" srcset="./assets/images/screenshots/desktop_screenshot-light.webp">
+		<img src="./assets/images/screenshots/desktop_screenshot-light.webp" alt="Desktop screenshot">
+	</picture>
+</p>
 
 ## What's Next?
 
@@ -97,4 +103,7 @@ chrome://extensions/
 ## Author(s)
 
 **Fabien CHAVONET**
-- GitHub: [@fchavonet](https://github.com/fchavonet)
+- [GitHub](https://github.com/fchavonet)
+- [itch.io](https://fchavonet.itch.io/)
+- [LinkedIn](https://www.linkedin.com/in/fchavonet/)
+- [Portfolio](https://www.fchavonet.dev)
